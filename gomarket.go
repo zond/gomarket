@@ -8,7 +8,9 @@ import (
 type Market struct {
 	Actors map[Actor]bool
 }
-
+func NewMarket() *Market {
+	return &Market{make(map[Actor]bool)}
+}
 func (m *Market) Trade() {
 	asks := make(map[interface{}][]*Ask)
 	bids := make(map[interface{}][]*Bid)
