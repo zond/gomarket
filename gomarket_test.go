@@ -147,3 +147,11 @@ func TestManySellersManyBuyersDealScarcity(t *testing.T) {
 		10.0,
 		[]float64{7.0, 5.0, 15.0}, []float64{10.0, 17.0})
 }
+
+func TestManySellersManyBuyersDealAbundance(t *testing.T) {
+	Check(t,
+		[]float64{7.0, 25.0, 15.0}, []float64{5.0, 4.0, 6.0}, []float64{10.0, 20.0}, []float64{20.0, 10.0},
+		5.0,
+		[]float64{5.0, 25.0, 0.0}, []float64{10.0, 20.0})
+}
+
