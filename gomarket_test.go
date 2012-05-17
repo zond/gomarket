@@ -69,7 +69,7 @@ func Check(t *testing.T,
 	}
 	for i := 0; i < len(expected_sells); i++ {
 		if sellers[i].SellSums[product] != expected_sells[i] {
-			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected seller",i,"to sell",expected_sells[i],"units, but only sold",sellers[i].SellSums[product],"units.")
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected seller",i,"to sell",expected_sells[i],"units, but sold",sellers[i].SellSums[product],"units.")
 		}
 		if sellers[i].SellSums[product] > 0 && sellers[i].SellPrices[product] != expected_price {
 			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected seller",i,"to sell for",expected_price,"but sold for",sellers[i].SellPrices[product])
@@ -77,7 +77,7 @@ func Check(t *testing.T,
 	}
 	for i := 0; i < len(expected_buys); i++ {
 		if buyers[i].BuySums[product] != expected_buys[i] {
-			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected buyer",i,"to buy",expected_buys[i],"units, but only bought",buyers[i].BuySums[product],"units.")
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected buyer",i,"to buy",expected_buys[i],"units, but bought",buyers[i].BuySums[product],"units.")
 		}
 		if buyers[i].BuySums[product] > 0 && buyers[i].BuyPrices[product] != expected_price {
 			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected buyer",i,"to buy for",expected_price,"but bought for",buyers[i].BuyPrices[product])
@@ -139,4 +139,11 @@ func TestManySellersOneBuyerNoDeal(t *testing.T) {
 		[]float64{7.0, 5.0, 15.0}, []float64{5.0, 4.0, 6.0}, []float64{10.0}, []float64{1.0},
 		2.5,
 		[]float64{0.0, 0.0, 0.0}, []float64{0.0})
+}
+
+func TestManySellersManyBuyersDealScarcity(t *testing.T) {
+	Check(t,
+		[]float64{7.0, 5.0, 15.0}, []float64{5.0, 4.0, 6.0}, []float64{10.0, 20.0}, []float64{20.0, 10.0},
+		10.0,
+		[]float64{7.0, 5.0, 15.0}, []float64{10.0, 17.0})
 }
