@@ -36,8 +36,8 @@ func (a *SimpleActor) Bids() map[*Order]bool {
 	return a.bids
 }
 func (a *SimpleActor) Buy(ask *Order, price float64) {
-	fmt.Println(a, " buys ", ask.Units, ask.Resource, " from ", ask.Actor, " á ", price)
+	fmt.Println(a, "buys", ask.Units, ask.Resource, "á", price, "from", ask.Actor)
 }
 func (a *SimpleActor) Sell(bid *Order, price float64) {
-	fmt.Println(a, " sells ", bid.Units, bid.Resource, " to ", bid.Actor, " á ", price)
+	fmt.Println(a, "sells", bid.Units, bid.Resource, "á", price, "to", bid.Actor)
 }
