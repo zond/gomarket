@@ -43,86 +43,65 @@ func (a *TestActor) Sell(bid *Order, price float64) {
 	a.SellPrices[bid.Resource] = price
 }
 
-func TestOneSellerNoBuyers(t *testing.T) {
+func Check(t *testing.T,
+	ask_units, ask_prices, bid_units, bid_prices []float64, 
+	expected_price float64, 
+	expected_sells, expected_buys []float64) {
 	m := NewMarket()
-	seller := NewTestActor()
-	shoes := "shoes"
-	seller.Ask(10.0, shoes, 5.0)
-	m.Actors[seller] = true
+	sellers := make([]*TestActor, 0)
+	buyers := make([]*TestActor, 0)
+	product := "product"
+	for i := 0; i < len(ask_units); i++ {
+		seller := NewTestActor()
+		seller.Ask(ask_units[i], product, ask_prices[i])
+		m.Actors[seller] = true
+		sellers = append(sellers, seller)
+	}
+	for i := 0; i < len(bid_units); i++ {
+		buyer := NewTestActor()
+		buyer.Bid(bid_units[i], product, bid_prices[i])
+		m.Actors[buyer] = true
+		buyers = append(buyers, buyer)
+	}
 	m.Trade()
-	if m.Prices[shoes] != 5.0 {
-		t.Fail()
+	if m.Prices[product] != expected_price {
+		t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected price to be",expected_price,"but was",m.Prices[product])
 	}
-	if len(seller.BuySums) != 0 {
-		t.Fail()
+	for i := 0; i < len(expected_sells); i++ {
+		if sellers[i].SellSums[product] != expected_sells[i] {
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected seller",i,"to sell",expected_sells[i],"units, but only sold",sellers[i].SellSums[product],"units.")
+		}
+		if sellers[i].SellSums[product] > 0 && sellers[i].SellPrices[product] != expected_price {
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected seller",i,"to sell for",expected_price,"but sold for",sellers[i].SellPrices[product])
+		}
 	}
-	if len(seller.SellSums) != 0 {
-		t.Fail()
+	for i := 0; i < len(expected_buys); i++ {
+		if buyers[i].BuySums[product] != expected_buys[i] {
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected buyer",i,"to buy",expected_buys[i],"units, but only bought",buyers[i].BuySums[product],"units.")
+		}
+		if buyers[i].BuySums[product] > 0 && buyers[i].BuyPrices[product] != expected_price {
+			t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected buyer",i,"to buy for",expected_price,"but bought for",buyers[i].BuyPrices[product])
+		}
 	}
+}
+
+func TestOneSellerNoBuyers(t *testing.T) {
+	Check(t,
+		[]float64{10.0}, []float64{5.0}, []float64{}, []float64{},
+		5.0,
+		[]float64{0.0}, []float64{})
 }
 
 func TestOneSellerOneBuyerNoDeal(t *testing.T) {
-	m := NewMarket()
-	seller := NewTestActor()
-	buyer := NewTestActor()
-	shoes := "shoes"
-	seller.Ask(10.0, shoes, 15.0)
-	buyer.Bid(10.0, shoes, 10.0)
-	m.Actors[seller] = true
-	m.Actors[buyer] = true
-	m.Trade()
-	if m.Prices[shoes] != 12.5 {
-		t.Fail()
-	}
-	if len(seller.BuySums) != 0 {
-		t.Fail()
-	}
-	if len(seller.SellSums) != 0 {
-		t.Fail()
-	}
-	if len(buyer.BuySums) != 0 {
-		t.Fail()
-	}
-	if len(buyer.SellSums) != 0 {
-		t.Fail()
-	}
+	Check(t,
+		[]float64{10.0}, []float64{5.0}, []float64{10.0}, []float64{2.0},
+		3.5,
+		[]float64{0.0}, []float64{0.0})
 }
 
 func TestOneSellerOneBuyerDeal(t *testing.T) {
-	m := NewMarket()
-	seller := NewTestActor()
-	buyer := NewTestActor()
-	shoes := "shoes"
-	seller.Ask(10.0, shoes, 5.0)
-	buyer.Bid(10.0, shoes, 10.0)
-	m.Actors[seller] = true
-	m.Actors[buyer] = true
-	m.Trade()
-	if m.Prices[shoes] != 7.5 {
-		t.Fail()
-	}
-	if len(seller.BuySums) != 0 {
-		t.Fail()
-	}
-	if len(seller.SellSums) != 1 {
-		t.Fail()
-	}
-	if seller.SellSums[shoes] != 10.0 {
-		t.Fail()
-	}
-	if seller.SellPrices[shoes] != 7.5 {
-		t.Fail()
-	}
-	if len(buyer.BuySums) != 1 {
-		t.Fail()
-	}
-	if len(buyer.SellSums) != 0 {
-		t.Fail()
-	}
-	if buyer.BuySums[shoes] != 10.0 {
-		t.Fail()
-	}
-	if buyer.BuyPrices[shoes] != 7.5 {
-		t.Fail()
-	}
+	Check(t,
+		[]float64{10.0}, []float64{5.0}, []float64{10.0}, []float64{10.0},
+		7.5,
+		[]float64{10.0}, []float64{10.0})
 }
