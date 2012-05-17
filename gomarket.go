@@ -16,32 +16,45 @@ func NewMarket() *Market {
 func (m *Market) tradeResource(asks, bids []*Order) float64 {
 	satisfied_bids := make(map[*Order]*Order)
 	last_ask_price, last_bid_price := 0.0, 0.0
-	for len(asks) > 0 && len(bids) > 0 {
+	match_exists := true
+	for len(asks) > 0 && len(bids) > 0 && match_exists {
 		bid := bids[0]
-		last_bid_price = bid.Price
 		ask := asks[len(asks) - 1]
+		last_bid_price = bid.Price
 		last_ask_price = ask.Price
-		if ask.Units > bid.Units {
-			partial_ask := &Order{bid.Units, ask.Resource, ask.Price, ask.Actor}
-			satisfied_bids[bid] = partial_ask
-			bids = bids[1:]
-			ask.Units = ask.Units - bid.Units
-		} else if ask.Units < bid.Units {
-			partial_bid := &Order{ask.Units, bid.Resource, bid.Price, bid.Actor}
-			satisfied_bids[partial_bid] = ask
-			asks = asks[:len(asks) - 1]
-			bid.Units = bid.Units - ask.Units
+		if bid.Price >= ask.Price {
+			if ask.Units > bid.Units {
+				partial_ask := &Order{bid.Units, ask.Resource, ask.Price, ask.Actor}
+				satisfied_bids[bid] = partial_ask
+				bids = bids[1:]
+				ask.Units = ask.Units - bid.Units
+			} else if ask.Units < bid.Units {
+				partial_bid := &Order{ask.Units, bid.Resource, bid.Price, bid.Actor}
+				satisfied_bids[partial_bid] = ask
+				asks = asks[:len(asks) - 1]
+				bid.Units = bid.Units - ask.Units
+			} else {
+				satisfied_bids[bid] = ask
+				asks = asks[:len(asks) - 1]
+				bids = bids[1:]
+			}
 		} else {
-			satisfied_bids[bid] = ask
-			asks = asks[:len(asks) - 1]
-			bids = bids[1:]
+			match_exists = false
 		}
 	}
 	actual_price := 0.0
-	if len(asks) > 0 {
-		actual_price = last_ask_price
+	if len(satisfied_bids) > 0 {
+		if len(asks) == 0 && len(bids) == 0 {
+			actual_price = (last_ask_price + last_bid_price) / 2.0
+		} else if len(asks) == 0 {
+			actual_price = last_bid_price
+		} else if len(bids) == 0 {
+			actual_price = last_ask_price
+		} else {
+			actual_price = (last_ask_price + last_bid_price) / 2.0
+		}
 	} else {
-		actual_price = last_bid_price
+		actual_price = (last_ask_price + last_bid_price) / 2.0
 	}
 	for bid, ask := range satisfied_bids {
 		bid.Actor.Buy(ask, actual_price)
@@ -56,8 +69,6 @@ func (m *Market) Trade() {
 		asks := all_asks[resource]
 		sort.Sort(Orders(asks))
 		sort.Sort(Orders(bids))
-		fmt.Println("asks for ", resource, "=", asks)
-		fmt.Println("bids for ", resource, "=", bids)
 		if ask_sums[resource] == 0 {
 			m.Prices[resource] = bids[0].Price
 		} else if bid_sums[resource] == 0 {
