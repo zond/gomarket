@@ -119,3 +119,10 @@ func TestOneSellerManyBuyersDeal(t *testing.T) {
 		12.0,
 		[]float64{10.0}, []float64{0.0, 5.0, 5.0})
 }
+
+func TestOneSellerManyBuyersNoDeal(t *testing.T) {
+	Check(t,
+		[]float64{10.0}, []float64{25.0}, []float64{5.0, 5.0, 5.0}, []float64{10.0, 15.0, 12.0},
+		17.5,
+		[]float64{0.0}, []float64{0.0, 0.0, 0.0})
+}
