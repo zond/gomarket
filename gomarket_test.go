@@ -92,6 +92,13 @@ func TestOneSellerNoBuyers(t *testing.T) {
 		[]float64{0.0}, []float64{})
 }
 
+func TestNoSellersOneBuyer(t *testing.T) {
+	Check(t,
+		[]float64{}, []float64{}, []float64{10.0}, []float64{10.0},
+		10.0,
+		[]float64{}, []float64{0.0})
+}
+
 func TestOneSellerOneBuyerNoDeal(t *testing.T) {
 	Check(t,
 		[]float64{10.0}, []float64{5.0}, []float64{10.0}, []float64{2.0},
@@ -106,9 +113,9 @@ func TestOneSellerOneBuyerDeal(t *testing.T) {
 		[]float64{10.0}, []float64{10.0})
 }
 
-func TestNoSellersOneBuyer(t *testing.T) {
+func TestOneSellerManyBuyersDeal(t *testing.T) {
 	Check(t,
-		[]float64{}, []float64{}, []float64{10.0}, []float64{10.0},
-		10.0,
-		[]float64{}, []float64{0.0})
+		[]float64{10.0}, []float64{5.0}, []float64{5.0, 5.0, 5.0}, []float64{10.0, 15.0, 12.0},
+		12.0,
+		[]float64{10.0}, []float64{0.0, 5.0, 5.0})
 }
