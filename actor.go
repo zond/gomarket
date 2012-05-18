@@ -1,14 +1,11 @@
 
 package gomarket
 
-import (
-	"reflect"
-)
-
 type Actor interface {
 	Asks() map[*Order]bool
 	Bids() map[*Order]bool
 	Buy(float64, Resource, float64, Actor)
+	Sell(float64, Resource, float64, Actor)
 }
 
 type TestActor struct {
@@ -43,7 +40,7 @@ func (a *TestActor) Bids() map[*Order]bool {
 func (a *TestActor) Buy(units float64, resource Resource, price float64, seller Actor) {
 	a.BuySums[resource] = a.BuySums[resource] + units
 	a.BuyPrices[resource] = price
-	reflect.ValueOf(seller).Interface().(*TestActor).Sell(units, resource, price, a)
+	seller.Sell(units, resource, price, a)
 }
 func (a *TestActor) Sell(units float64, resource Resource, price float64, buyer Actor) {
 	a.SellSums[resource] = a.SellSums[resource] + units
