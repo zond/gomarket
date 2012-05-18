@@ -59,7 +59,7 @@ func (m *Market) tradeResource(asks, bids []*Order) float64 {
 		actual_price = (last_ask_price + last_bid_price) / 2.0
 	}
 	for bid, ask := range satisfied_bids {
-		bid.Actor.Buy(bid.Units, bid.Resource, actual_price, ask.Actor)
+		bid.Actor.Buy(bid, ask, actual_price)
 	}
 	return actual_price
 }
