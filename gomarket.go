@@ -6,12 +6,14 @@ import (
 	"sort"
 )
 
+type Resource interface {}
+
 type Market struct {
 	Actors map[Actor]bool
-	Prices map[interface{}]float64
+	Prices map[Resource]float64
 }
 func NewMarket() *Market {
-	return &Market{make(map[Actor]bool), make(map[interface{}]float64)}
+	return &Market{make(map[Actor]bool), make(map[Resource]float64)}
 }
 func (m *Market) tradeResource(asks, bids []*Order) float64 {
 	satisfied_bids := make(map[*Order]*Order)
@@ -79,15 +81,15 @@ func (m *Market) Trade() {
 	}
 }
 func (m *Market) createSums() (
-	asks, bids map[interface{}][]*Order, 
-	ask_sums, bid_sums map[interface{}]float64, 
-	resources map[interface{}]bool) {
+	asks, bids map[Resource][]*Order, 
+	ask_sums, bid_sums map[Resource]float64, 
+	resources map[Resource]bool) {
 	
-	asks = make(map[interface{}][]*Order)
-	bids = make(map[interface{}][]*Order)
-	resources = make(map[interface{}]bool)
-	ask_sums = make(map[interface{}]float64)
-	bid_sums = make(map[interface{}]float64)
+	asks = make(map[Resource][]*Order)
+	bids = make(map[Resource][]*Order)
+	resources = make(map[Resource]bool)
+	ask_sums = make(map[Resource]float64)
+	bid_sums = make(map[Resource]float64)
 	for actor,_ := range m.Actors {
 		for ask,_ := range actor.Asks() {
 			asks[ask.Resource] = append(asks[ask.Resource], ask)
@@ -106,7 +108,7 @@ func (m *Market) createSums() (
 
 type Order struct {
 	Units float64
-	Resource interface{}
+	Resource Resource
 	Price float64
 	Actor Actor
 }

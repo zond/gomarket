@@ -11,24 +11,24 @@ type Actor interface {
 type TestActor struct {
 	asks map[*Order]bool
 	bids map[*Order]bool
-	BuySums map[interface{}]float64
-	SellSums map[interface{}]float64
-	BuyPrices map[interface{}]float64
-	SellPrices map[interface{}]float64
+	BuySums map[Resource]float64
+	SellSums map[Resource]float64
+	BuyPrices map[Resource]float64
+	SellPrices map[Resource]float64
 }
 func NewTestActor() *TestActor {
 	return &TestActor{
 		make(map[*Order]bool), 
 		make(map[*Order]bool), 
-		make(map[interface{}]float64), 
-		make(map[interface{}]float64),
-		make(map[interface{}]float64), 
-		make(map[interface{}]float64)}
+		make(map[Resource]float64), 
+		make(map[Resource]float64),
+		make(map[Resource]float64), 
+		make(map[Resource]float64)}
 }
-func (a *TestActor) Ask(units float64, resource interface{}, price float64) {
+func (a *TestActor) Ask(units float64, resource Resource, price float64) {
 	a.asks[&Order{units, resource, price, a}] = true
 }
-func (a *TestActor) Bid(units float64, resource interface{}, price float64) {
+func (a *TestActor) Bid(units float64, resource Resource, price float64) {
 	a.bids[&Order{units, resource, price, a}] = true
 }
 func (a *TestActor) Asks() map[*Order]bool {
