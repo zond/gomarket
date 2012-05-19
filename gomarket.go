@@ -15,6 +15,12 @@ type Market struct {
 func NewMarket() *Market {
 	return &Market{make(map[Actor]bool), make(map[Resource]float64)}
 }
+func (m *Market) Add(a Actor) {
+	m.actors[a] = true
+}
+func (m *Market) Del(a Actor) {
+	delete(m.actors, a)
+}
 func (m *Market) tradeResource(asks, bids []*Order) float64 {
 	satisfied_bids := make(map[*Order]*Order)
 	last_ask_price, last_bid_price := 0.0, 0.0
