@@ -114,6 +114,12 @@ func (m *Market) createSums() (
 	return
 }
 
+type Actor interface {
+	Asks() map[*Order]bool
+	Bids() map[*Order]bool
+	Buy(*Order, *Order, float64)
+	Deliver(*Order, *Order, float64)
+}
 
 type Order struct {
 	Units float64
