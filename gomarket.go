@@ -21,6 +21,10 @@ func (m *Market) Add(a Actor) {
 func (m *Market) Del(a Actor) {
 	delete(m.actors, a)
 }
+func (m *Market) Price(r Resource) (price float64, ok bool) {
+	price, ok = m.prices[r]
+	return
+}
 func (m *Market) tradeResource(asks, bids []*Order) float64 {
 	satisfied_bids := make(map[*Order]*Order)
 	last_ask_price, last_bid_price := 0.0, 0.0
