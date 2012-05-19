@@ -16,18 +16,18 @@ func Check(t *testing.T,
 	for i := 0; i < len(ask_units); i++ {
 		seller := NewTestActor()
 		seller.Ask(ask_units[i], product, ask_prices[i])
-		m.Actors[seller] = true
+		m.actors[seller] = true
 		sellers = append(sellers, seller)
 	}
 	for i := 0; i < len(bid_units); i++ {
 		buyer := NewTestActor()
 		buyer.Bid(bid_units[i], product, bid_prices[i])
-		m.Actors[buyer] = true
+		m.actors[buyer] = true
 		buyers = append(buyers, buyer)
 	}
 	m.Trade()
-	if m.Prices[product] != expected_price {
-		t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected price to be",expected_price,"but was",m.Prices[product])
+	if m.prices[product] != expected_price {
+		t.Error("When selling",ask_units,"for",ask_prices,"and buying",bid_units,"for",bid_prices,"expected price to be",expected_price,"but was",m.prices[product])
 	}
 	for i := 0; i < len(expected_sells); i++ {
 		if sellers[i].SellSums[product] != expected_sells[i] {

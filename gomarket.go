@@ -9,8 +9,8 @@ import (
 type Resource interface {}
 
 type Market struct {
-	Actors map[Actor]bool
-	Prices map[Resource]float64
+	actors map[Actor]bool
+	prices map[Resource]float64
 }
 func NewMarket() *Market {
 	return &Market{make(map[Actor]bool), make(map[Resource]float64)}
@@ -71,11 +71,11 @@ func (m *Market) Trade() {
 		sort.Sort(Orders(asks))
 		sort.Sort(Orders(bids))
 		if ask_sums[resource] == 0 {
-			m.Prices[resource] = bids[0].Price
+			m.prices[resource] = bids[0].Price
 		} else if bid_sums[resource] == 0 {
-			m.Prices[resource] = asks[len(asks) - 1].Price
+			m.prices[resource] = asks[len(asks) - 1].Price
 		} else {
-			m.Prices[resource] = m.tradeResource(asks, bids)
+			m.prices[resource] = m.tradeResource(asks, bids)
 		}
 	}
 }
@@ -89,7 +89,7 @@ func (m *Market) createSums() (
 	resources = make(map[Resource]bool)
 	ask_sums = make(map[Resource]float64)
 	bid_sums = make(map[Resource]float64)
-	for actor,_ := range m.Actors {
+	for actor,_ := range m.actors {
 		for ask,_ := range actor.Asks() {
 			asks[ask.Resource] = append(asks[ask.Resource], ask)
 			ask_sums[ask.Resource] += ask.Units
