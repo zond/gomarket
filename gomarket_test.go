@@ -6,38 +6,26 @@ import (
 )
 
 type TestActor struct {
-	asks map[*Order]bool
-	bids map[*Order]bool
+	*StandardTrader
 	BuySums map[Resource]float64
 	SellSums map[Resource]float64
 	BuyPrices map[Resource]float64
 	SellPrices map[Resource]float64
 }
 func NewTestActor() *TestActor {
-	return &TestActor{
-		make(map[*Order]bool), 
-		make(map[*Order]bool), 
+	t := &TestActor{
+		nil,
 		make(map[Resource]float64), 
 		make(map[Resource]float64),
 		make(map[Resource]float64), 
 		make(map[Resource]float64)}
-}
-func (a *TestActor) Ask(units float64, resource Resource, price float64) {
-	a.asks[&Order{units, resource, price, a}] = true
-}
-func (a *TestActor) Bid(units float64, resource Resource, price float64) {
-	a.bids[&Order{units, resource, price, a}] = true
-}
-func (a *TestActor) Asks() map[*Order]bool {
-	return a.asks
-}
-func (a *TestActor) Bids() map[*Order]bool {
-	return a.bids
+	t.StandardTrader = NewStandardTrader(t)
+	return t
 }
 func (a *TestActor) Buy(bid, ask *Order, price float64) {
 	a.BuySums[bid.Resource] = a.BuySums[bid.Resource] + bid.Units
 	a.BuyPrices[bid.Resource] = price
-	ask.Actor.Deliver(bid, ask, price)
+	ask.Carrier.Deliver(bid, ask, price)
 }
 func (a *TestActor) Deliver(bid, ask *Order, price float64) {
 	a.SellSums[ask.Resource] = a.SellSums[ask.Resource] + ask.Units
@@ -55,13 +43,13 @@ func Check(t *testing.T,
 	for i := 0; i < len(ask_units); i++ {
 		seller := NewTestActor()
 		seller.Ask(ask_units[i], product, ask_prices[i])
-		m.actors[seller] = true
+		m.Add(seller)
 		sellers = append(sellers, seller)
 	}
 	for i := 0; i < len(bid_units); i++ {
 		buyer := NewTestActor()
 		buyer.Bid(bid_units[i], product, bid_prices[i])
-		m.actors[buyer] = true
+		m.Add(buyer)
 		buyers = append(buyers, buyer)
 	}
 	m.Trade()

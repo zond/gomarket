@@ -9,17 +9,17 @@ import (
 type Resource interface {}
 
 type Market struct {
-	actors map[Actor]bool
+	traders map[Trader]bool
 	prices map[Resource]float64
 }
 func NewMarket() *Market {
-	return &Market{make(map[Actor]bool), make(map[Resource]float64)}
+	return &Market{make(map[Trader]bool), make(map[Resource]float64)}
 }
-func (m *Market) Add(a Actor) {
-	m.actors[a] = true
+func (m *Market) Add(t Trader) {
+	m.traders[t] = true
 }
-func (m *Market) Del(a Actor) {
-	delete(m.actors, a)
+func (m *Market) Del(t Trader) {
+	delete(m.traders, t)
 }
 func (m *Market) Price(r Resource) (price float64, ok bool) {
 	price, ok = m.prices[r]
@@ -36,12 +36,12 @@ func (m *Market) tradeResource(asks, bids []*Order) float64 {
 		last_ask_price = ask.Price
 		if bid.Price >= ask.Price {
 			if ask.Units > bid.Units {
-				partial_ask := &Order{bid.Units, ask.Resource, ask.Price, ask.Actor}
+				partial_ask := &Order{bid.Units, ask.Resource, ask.Price, ask.Carrier}
 				satisfied_bids[bid] = partial_ask
 				bids = bids[1:]
 				ask.Units = ask.Units - bid.Units
 			} else if ask.Units < bid.Units {
-				partial_bid := &Order{ask.Units, bid.Resource, bid.Price, bid.Actor}
+				partial_bid := &Order{ask.Units, bid.Resource, bid.Price, bid.Carrier}
 				satisfied_bids[partial_bid] = ask
 				asks = asks[:len(asks) - 1]
 				bid.Units = bid.Units - ask.Units
@@ -69,7 +69,7 @@ func (m *Market) tradeResource(asks, bids []*Order) float64 {
 		actual_price = (last_ask_price + last_bid_price) / 2.0
 	}
 	for bid, ask := range satisfied_bids {
-		bid.Actor.Buy(bid, ask, actual_price)
+		bid.Carrier.Buy(bid, ask, actual_price)
 	}
 	return actual_price
 }
@@ -99,13 +99,13 @@ func (m *Market) createSums() (
 	resources = make(map[Resource]bool)
 	ask_sums = make(map[Resource]float64)
 	bid_sums = make(map[Resource]float64)
-	for actor,_ := range m.actors {
-		for ask,_ := range actor.Asks() {
+	for trader,_ := range m.traders {
+		for _,ask := range trader.Asks() {
 			asks[ask.Resource] = append(asks[ask.Resource], ask)
 			ask_sums[ask.Resource] += ask.Units
 			resources[ask.Resource] = true
 		}
-		for bid,_ := range actor.Bids() {
+		for _,bid := range trader.Bids() {
 			bids[bid.Resource] = append(bids[bid.Resource], bid)
 			bid_sums[bid.Resource] += bid.Units
 			resources[bid.Resource] = true
@@ -114,21 +114,44 @@ func (m *Market) createSums() (
 	return
 }
 
-type Actor interface {
-	Asks() map[*Order]bool
-	Bids() map[*Order]bool
+type Trader interface {
+	Asks() []*Order
+	Bids() []*Order
+}
+type Carrier interface {
 	Buy(*Order, *Order, float64)
 	Deliver(*Order, *Order, float64)
+}
+
+type StandardTrader struct {
+	Carrier
+	asks []*Order
+	bids []*Order
+}
+func NewStandardTrader(carrier Carrier) *StandardTrader {
+	return &StandardTrader{carrier, nil, nil}
+}
+func (a *StandardTrader) Ask(units float64, resource Resource, price float64) {
+	a.asks = append(a.asks, &Order{units, resource, price, a})
+}
+func (a *StandardTrader) Bid(units float64, resource Resource, price float64) {
+	a.bids = append(a.bids, &Order{units, resource, price, a})
+}
+func (a *StandardTrader) Asks() []*Order {
+	return a.asks
+}
+func (a *StandardTrader) Bids() []*Order {
+	return a.bids
 }
 
 type Order struct {
 	Units float64
 	Resource Resource
 	Price float64
-	Actor Actor
+	Carrier Carrier
 }
 func (o *Order) String() string {
-	return fmt.Sprint(o.Actor, ":", o.Resource, ":", o.Units, "*", o.Price)
+	return fmt.Sprint(o.Carrier, ":", o.Resource, ":", o.Units, "*", o.Price)
 }
 
 
