@@ -9,16 +9,6 @@ import (
 type Resource interface {}
 
 type Resources map[Resource]float64
-func (r Resources) Merge(o Resources) Resources {
-	merged := make(Resources)
-	for resource, units := range r {
-		merged[resource] = units
-	}
-	for resource, units := range o {
-		merged[resource] = merged[resource] + units
-	}
-	return merged
-}
 func (r Resources) MergeIn(o Resources) {
 	for resource, units := range o {
 		r[resource] = r[resource] + units

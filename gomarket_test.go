@@ -169,16 +169,6 @@ func TestValue(t *testing.T) {
 	}
 }
 
-func TestMerge(t *testing.T) {
-	rice := "rice"
-	shoes := "shoes"
-	r1 := Resources(Resources{rice: 4.0, shoes: 3.2})
-	r2 := Resources(Resources{rice: 1.0, shoes: 0.2})
-	if r1.Merge(r2).Eq(Resources{rice: 5.0, shoes: 3.4}) {
-		t.Error("wrong merge!")
-	}
-}
-
 func TestMergeIn(t *testing.T) {
 	rice := "rice"
 	shoes := "shoes"
