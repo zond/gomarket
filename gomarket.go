@@ -10,7 +10,7 @@ type Resource interface {}
 
 type Resources map[Resource]float64
 func (r Resources) Merge(o Resources) Resources {
-	merged := make(map[Resource]float64)
+	merged := make(Resources)
 	for resource, units := range r {
 		merged[resource] = units
 	}
@@ -51,7 +51,7 @@ type Market struct {
 	prices map[Resource]float64
 }
 func NewMarket() *Market {
-	return &Market{make(map[Trader]bool), make(map[Resource]float64)}
+	return &Market{make(map[Trader]bool), make(Resources)}
 }
 func (m *Market) Add(t Trader) {
 	m.traders[t] = true
@@ -146,8 +146,8 @@ func (m *Market) createSums() (
 	asks = make(map[Resource][]*Order)
 	bids = make(map[Resource][]*Order)
 	resources = make(map[Resource]bool)
-	ask_sums = make(map[Resource]float64)
-	bid_sums = make(map[Resource]float64)
+	ask_sums = make(Resources)
+	bid_sums = make(Resources)
 	for trader,_ := range m.traders {
 		for _,ask := range trader.Asks() {
 			asks[ask.Resource] = append(asks[ask.Resource], ask)

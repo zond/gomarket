@@ -7,18 +7,18 @@ import (
 
 type TestActor struct {
 	*StandardTrader
-	BuySums map[Resource]float64
-	SellSums map[Resource]float64
-	BuyPrices map[Resource]float64
-	SellPrices map[Resource]float64
+	BuySums Resources
+	SellSums Resources
+	BuyPrices Resources
+	SellPrices Resources
 }
 func NewTestActor() *TestActor {
 	t := &TestActor{
 		nil,
-		make(map[Resource]float64), 
-		make(map[Resource]float64),
-		make(map[Resource]float64), 
-		make(map[Resource]float64)}
+		make(Resources),
+		make(Resources),
+		make(Resources), 
+		make(Resources)}
 	t.StandardTrader = NewStandardTrader(t)
 	return t
 }
@@ -164,7 +164,7 @@ func TestValue(t *testing.T) {
 	shoes := "shoes"
 	m.prices[rice] = 2.0
 	m.prices[shoes] = 3.0
-	if m.Value(map[Resource]float64{rice: 4.0, shoes: 5.0}) != 23.0 {
+	if m.Value(Resources{rice: 4.0, shoes: 5.0}) != 23.0 {
 		t.Error("wrong price!")
 	}
 }
@@ -172,9 +172,9 @@ func TestValue(t *testing.T) {
 func TestMerge(t *testing.T) {
 	rice := "rice"
 	shoes := "shoes"
-	r1 := Resources(map[Resource]float64{rice: 4.0, shoes: 3.2})
-	r2 := Resources(map[Resource]float64{rice: 1.0, shoes: 0.2})
-	if r1.Merge(r2).Eq(map[Resource]float64{rice: 5.0, shoes: 3.4}) {
+	r1 := Resources(Resources{rice: 4.0, shoes: 3.2})
+	r2 := Resources(Resources{rice: 1.0, shoes: 0.2})
+	if r1.Merge(r2).Eq(Resources{rice: 5.0, shoes: 3.4}) {
 		t.Error("wrong merge!")
 	}
 }
@@ -182,10 +182,10 @@ func TestMerge(t *testing.T) {
 func TestMergeIn(t *testing.T) {
 	rice := "rice"
 	shoes := "shoes"
-	r1 := Resources(map[Resource]float64{rice: 4.0, shoes: 3.2})
-	r2 := Resources(map[Resource]float64{rice: 1.0, shoes: 0.2})
+	r1 := Resources(Resources{rice: 4.0, shoes: 3.2})
+	r2 := Resources(Resources{rice: 1.0, shoes: 0.2})
 	r1.MergeIn(r2)
-	if r1.Eq(map[Resource]float64{rice: 5.0, shoes: 3.4}) {
+	if r1.Eq(Resources{rice: 5.0, shoes: 3.4}) {
 		t.Error("wrong merge!")
 	}
 }
