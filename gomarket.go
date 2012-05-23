@@ -19,6 +19,11 @@ func (r Resources) Merge(o Resources) Resources {
 	}
 	return merged
 }
+func (r Resources) MergeIn(o Resources) {
+	for resource, units := range o {
+		r[resource] = r[resource] + units
+	}
+}
 func (r Resources) Eq(o Resources) bool {
 	for resource, units := range r {
 		if otherUnits, ok := o[resource]; ok {

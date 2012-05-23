@@ -178,3 +178,14 @@ func TestMerge(t *testing.T) {
 		t.Error("wrong merge!")
 	}
 }
+
+func TestMergeIn(t *testing.T) {
+	rice := "rice"
+	shoes := "shoes"
+	r1 := Resources(map[Resource]float64{rice: 4.0, shoes: 3.2})
+	r2 := Resources(map[Resource]float64{rice: 1.0, shoes: 0.2})
+	r1.MergeIn(r2)
+	if r1.Eq(map[Resource]float64{rice: 5.0, shoes: 3.4}) {
+		t.Error("wrong merge!")
+	}
+}
