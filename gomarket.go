@@ -14,6 +14,13 @@ func (r Resources) MergeIn(o Resources) {
 		r[resource] = r[resource] + units
 	}
 }
+func (r Resources) Clone() Resources {
+	returnValue := make(Resources)
+	for resource, units := range r {
+		returnValue[resource] = units
+	}
+	return returnValue
+}
 func (r Resources) Eq(o Resources) bool {
 	for resource, units := range r {
 		if otherUnits, ok := o[resource]; ok {

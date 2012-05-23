@@ -169,6 +169,24 @@ func TestValue(t *testing.T) {
 	}
 }
 
+func TestEq(t *testing.T) {
+	rice := "rice"
+	shoes := "shoes"
+	r1 := Resources(Resources{rice: 4.0, shoes: 3.2})
+	r2 := Resources(Resources{rice: 4.0, shoes: 3.2})
+	r3 := Resources(Resources{rice: 4.0})
+	r4 := Resources(Resources{rice: 4.0, shoes: 3.1})
+	if !r1.Eq(r2) {
+		t.Error("should be equal!")
+	}
+	if r1.Eq(r3) {
+		t.Error("should not be equal!")
+	}
+	if r1.Eq(r4) {
+		t.Error("should not be equal!")
+	}
+}
+
 func TestMergeIn(t *testing.T) {
 	rice := "rice"
 	shoes := "shoes"
@@ -177,5 +195,14 @@ func TestMergeIn(t *testing.T) {
 	r1.MergeIn(r2)
 	if r1.Eq(Resources{rice: 5.0, shoes: 3.4}) {
 		t.Error("wrong merge!")
+	}
+}
+
+func TestClone(t *testing.T) {
+	rice := "rice"
+	shoes := "shoes"
+	r1 := Resources(Resources{rice: 4.0, shoes: 3.2})
+	if !r1.Eq(r1.Clone()) {
+		t.Error("not equal!")
 	}
 }
