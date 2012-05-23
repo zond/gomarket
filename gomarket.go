@@ -25,6 +25,17 @@ func (m *Market) Price(r Resource) (price float64, ok bool) {
 	price, ok = m.prices[r]
 	return
 }
+func (m *Market) Value(resources map[Resource]float64) float64 {
+	value := 0.0
+	for resource, units := range resources {
+		if price, ok := m.Price(resource); ok {
+			value = value + price * units
+		} else {
+			value = value + units
+		}
+	}
+	return value
+}
 func (m *Market) tradeResource(asks, bids []*Order) float64 {
 	satisfied_bids := make(map[*Order]*Order)
 	last_ask_price, last_bid_price := 0.0, 0.0
