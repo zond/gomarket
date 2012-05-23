@@ -158,3 +158,23 @@ func TestManySellersManyBuyersNoDealAbundance(t *testing.T) {
 		[]float64{0.0, 0.0, 0.0}, []float64{0.0, 0.0})
 }
 
+func TestValue(t *testing.T) {
+	m := NewMarket()
+	rice := "rice"
+	shoes := "shoes"
+	m.prices[rice] = 2.0
+	m.prices[shoes] = 3.0
+	if m.Value(map[Resource]float64{rice: 4.0, shoes: 5.0}) != 23.0 {
+		t.Error("wrong price!")
+	}
+}
+
+func TestMerge(t *testing.T) {
+	rice := "rice"
+	shoes := "shoes"
+	r1 := Resources(map[Resource]float64{rice: 4.0, shoes: 3.2})
+	r2 := Resources(map[Resource]float64{rice: 1.0, shoes: 0.2})
+	if r1.Merge(r2).Eq(map[Resource]float64{rice: 5.0, shoes: 3.4}) {
+		t.Error("wrong merge!")
+	}
+}

@@ -8,6 +8,39 @@ import (
 
 type Resource interface {}
 
+type Resources map[Resource]float64
+func (r Resources) Merge(o Resources) Resources {
+	merged := make(map[Resource]float64)
+	for resource, units := range r {
+		merged[resource] = units
+	}
+	for resource, units := range o {
+		merged[resource] = merged[resource] + units
+	}
+	return merged
+}
+func (r Resources) Eq(o Resources) bool {
+	for resource, units := range r {
+		if otherUnits, ok := o[resource]; ok {
+			if otherUnits != units {
+				return false
+			}
+		} else {
+			return false
+		}
+	}
+	for resource, otherUnits := range o {
+		if units, ok := r[resource]; ok {
+			if units != otherUnits {
+				return false
+			}
+		} else {
+			return false
+		}
+	}
+	return true
+}
+
 type Market struct {
 	traders map[Trader]bool
 	prices map[Resource]float64
@@ -25,7 +58,7 @@ func (m *Market) Price(r Resource) (price float64, ok bool) {
 	price, ok = m.prices[r]
 	return
 }
-func (m *Market) Value(resources map[Resource]float64) float64 {
+func (m *Market) Value(resources Resources) float64 {
 	value := 0.0
 	for resource, units := range resources {
 		if price, ok := m.Price(resource); ok {
