@@ -38,7 +38,7 @@ func (r Resources) Eq(o Resources) bool {
 
 type Market struct {
 	traders map[Trader]bool
-	prices map[Resource]float64
+	prices Resources
 }
 func NewMarket() *Market {
 	return &Market{make(map[Trader]bool), make(Resources)}
